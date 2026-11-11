@@ -10,7 +10,9 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format:check":"npx biome format ./src",
+    "format:fix":"npx biome format --write ./src"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.7",
