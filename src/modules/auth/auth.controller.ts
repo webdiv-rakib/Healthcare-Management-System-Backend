@@ -1,9 +1,9 @@
 import httpStatus from "http-status";
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { authService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
-import { IRequestUser } from "./auth.interface";
+import type { IRequestUser } from "./auth.interface";
 
 const registerPatient = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {

@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
-import {
+import type {
 	ILoginUserPayload,
 	IRegisterPatientPayload,
 	IRequestUser,
@@ -8,7 +8,7 @@ import {
 import config from "../../config";
 import { Role, UserStatus } from "../../../generated/prisma/enums";
 import { jwtUtils } from "../../utils/jwt";
-import { JwtPayload, SignOptions } from "jsonwebtoken";
+import type { JwtPayload, SignOptions } from "jsonwebtoken";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password } = payload;

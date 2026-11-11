@@ -12,7 +12,9 @@
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format:check":"npx biome format ./src",
-    "format:fix":"npx biome format --write ./src"
+    "format:fix":"npx biome format --write ./src",
+    "lint:check":"npx biome lint ./src",
+    "lint:fix":"npx biome lint --write ./src"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.7",
