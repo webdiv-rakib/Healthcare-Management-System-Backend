@@ -11,10 +11,10 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format:check":"npx biome format ./src",
-    "format:fix":"npx biome format --write ./src",
-    "lint:check":"npx biome lint ./src",
-    "lint:fix":"npx biome lint --write ./src"
+    "format:check": "npx biome format ./src",
+    "format:fix": "npx biome format --write ./src",
+    "lint:check": "npx biome lint ./src",
+    "lint:fix": "npx biome lint --write ./src"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.7",
@@ -36,6 +36,7 @@
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
+    "google-auth-library": "^11.3.4",
     "http-status": "^2.1.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.1"
