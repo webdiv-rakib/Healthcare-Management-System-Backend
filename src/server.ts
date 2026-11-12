@@ -7,10 +7,10 @@ import { seedSuperAdmin, seedTestAdmin, seedTestDoctor } from "./utils/seed";
 async function main() {
 	try {
 		await prisma.$connect();
+		console.log("Connected to the database successfully");
 		await seedSuperAdmin();
 		await seedTestAdmin();
 		await seedTestDoctor();
-		console.log("Connected to the database successfully");
 		app.listen(config.port, () => {
 			console.log(`Server is running on port:${config.port}`);
 		});

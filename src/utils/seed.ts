@@ -45,11 +45,12 @@ export const seedSuperAdmin = async () => {
 		});
 	}
 };
+
 export const seedTestAdmin = async () => {
 	try {
-		const isTestAdminExists = await prisma.user.findFirst({
+		const isTestAdminExists = await prisma.user.findUnique({
 			where: {
-				role: Role.ADMIN,
+				email: config.test_admin_email,
 			},
 		});
 		if (isTestAdminExists) {
@@ -87,11 +88,12 @@ export const seedTestAdmin = async () => {
 		});
 	}
 };
+
 export const seedTestDoctor = async () => {
 	try {
-		const isTestDoctorExists = await prisma.user.findFirst({
+		const isTestDoctorExists = await prisma.user.findUnique({
 			where: {
-				role: Role.DOCTOR,
+				email: config.test_doctor_email,
 			},
 		});
 		if (isTestDoctorExists) {
