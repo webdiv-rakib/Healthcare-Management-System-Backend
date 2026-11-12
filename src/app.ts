@@ -14,7 +14,6 @@ import { authRoutes } from "./modules/auth/auth.route";
 import z, { success } from "zod";
 
 const app: Application = express();
-
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
