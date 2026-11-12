@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import cookieParser from "cookie-parser";
 import express, {
-	NextFunction,
+	type NextFunction,
 	type Application,
 	type Request,
 	type Response,
