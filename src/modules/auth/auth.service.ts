@@ -19,7 +19,7 @@ import { googleClient } from "../../lib/googleAuth";
 import type { TokenPayload } from "google-auth-library";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
-	const { name, password } = payload;
+	const { name, password, patient: patientData } = payload;
 	const email = payload.email.trim().toLowerCase();
 	const isUserExists = await prisma.user.findUnique({
 		where: { email },
@@ -46,6 +46,7 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 				create: {
 					name,
 					email,
+					contactNumber: patientData?.contactNumber || "",
 				},
 			},
 		},

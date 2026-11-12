@@ -4,11 +4,34 @@ import { catchAsync } from "../../utils/catchAsync";
 import { authService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
 import type { IRequestUser } from "./auth.interface";
+import z from "zod";
+
+const PatientRegistrationZodSchema = z.object({
+	name: z.string().min(3).max(10),
+	email: z.email(),
+	password: z
+		.string()
+		.min(8)
+		.max(32)
+		.regex(/[A-Z]/)
+		.regex(/[a-z]/)
+		.regex(/[0-9]/)
+		.regex(/[^A-Za-z0-9]/),
+	patient: z
+		.object({
+			contactNumber: z.string().optional(),
+		})
+		.optional(),
+});
 
 const registerPatient = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const payload = req.body;
-		const result = await authService.registerPatient(payload);
+		const payload = PatientRegistrationZodSchema.safeParse(req.body);
+		if (!payload.success) {
+			throw new Error(payload.error.message);
+		}
+		console.log(payload);
+		const result = await authService.registerPatient(payload.data as any);
 		const { accessToken, refreshToken, user, patient } = result;
 
 		res.cookie("accessToken", accessToken, {
