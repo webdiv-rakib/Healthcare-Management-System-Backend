@@ -2,12 +2,14 @@ import "dotenv/config";
 import app from "./app";
 import config from "./config";
 import { prisma } from "./lib/prisma";
-import { seedSuperAdmin } from "./utils/seed";
+import { seedSuperAdmin, seedTestAdmin, seedTestDoctor } from "./utils/seed";
 
 async function main() {
 	try {
 		await prisma.$connect();
 		await seedSuperAdmin();
+		await seedTestAdmin();
+		await seedTestDoctor();
 		console.log("Connected to the database successfully");
 		app.listen(config.port, () => {
 			console.log(`Server is running on port:${config.port}`);

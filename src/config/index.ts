@@ -17,4 +17,10 @@ export default {
 	super_admin_name: process.env.SUPER_ADMIN_NAME!,
 	super_admin_email: process.env.SUPER_ADMIN_EMAIL!,
 	super_admin_password: process.env.SUPER_ADMIN_PASSWORD!,
+	test_admin_name: process.env.TEST_ADMIN_NAME!,
+	test_admin_email: process.env.TEST_ADMIN_EMAIL!,
+	test_admin_password: process.env.TEST_ADMIN_PASSWORD!,
+	test_doctor_name: process.env.TEST_DOCTOR_NAME!,
+	test_doctor_email: process.env.TEST_DOCTOR_EMAIL!,
+	test_doctor_password: process.env.TEST_DOCTOR_PASSWORD!,
 };
