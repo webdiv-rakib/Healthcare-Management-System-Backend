@@ -173,13 +173,13 @@ const forgotPassword = catchAsync(
 const resetPassword = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const payload = req.body;
-		const result = await authService.resetPassword(payload);
+		await authService.resetPassword(payload);
 
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
-			message: "User logged in successfully",
-			data: {},
+			message: "Password Changed Successfully",
+			data: null,
 		});
 	},
 );

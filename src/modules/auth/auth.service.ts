@@ -358,7 +358,51 @@ const forgotPassword = async (payload: IForgotPassword) => {
 	});
 };
 
-const resetPassword = (payload: IResetPassword) => {};
+const resetPassword = async (payload: IResetPassword) => {
+	const { email, otp, newPassword } = payload;
+	const isUserExist = await prisma.user.findUnique({
+		where: {
+			email,
+		},
+	});
+	if (!isUserExist) {
+		throw new Error("No User Found With this email");
+	}
+	if (isUserExist.status === "BLOCKED") {
+		throw new Error("This use is blocked");
+	}
+	if (isUserExist.isDeleted || isUserExist.status === "DELETED") {
+		throw new Error("User is deleted");
+	}
+	if (isUserExist.googleId && isUserExist.authProvider === "GOOGLE") {
+		throw new Error("Use has accoutn with google");
+	}
+	if (!isUserExist.emailVerified) {
+		throw new Error("User not verified");
+	}
+
+	const key = `forgot-password-otp:${isUserExist.email}`;
+	const redisOtp = await redisClient.get(key);
+	if (!redisOtp) {
+		throw new Error("Invalid OTP");
+	}
+	if (redisOtp !== otp) {
+		throw new Error("OTP Does Not Matched");
+	}
+	const hashedNewPassword = await bcrypt.hash(
+		newPassword,
+		Number(config.bcrypt_salt_rounds),
+	);
+	await prisma.user.update({
+		where: {
+			email: isUserExist.email,
+		},
+		data: {
+			password: hashedNewPassword,
+		},
+	});
+	await redisClient.del([key]);
+};
 
 export const authService = {
 	registerPatient,
