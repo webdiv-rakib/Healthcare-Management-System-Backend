@@ -13,6 +13,7 @@ import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
 import z, { success } from "zod";
 import { redisClient } from "./lib/redis";
+import crypto from "crypto";
 
 const app: Application = express();
 // middleware
@@ -63,17 +64,19 @@ app.use("/api/v1/auth", authRoutes);
 // });
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		await redisClient.set("forgot-password-otp:patient1@gmail.com", "123456", {
-			expiration: {
-				type: "EX",
-				value: 60,
-			},
-		});
+		const otp = crypto.randomInt(100000, 1000000);
+
+		// await redisClient.set("forgot-password-otp:patient1@gmail.com", "123456", {
+		// 	expiration: {
+		// 		type: "EX",
+		// 		value: 60,
+		// 	},
+		// });
 
 		res.status(httpStatus.OK).json({
 			success: true,
 			message: "Welcome to Healthcare Management System",
-			data: null,
+			data: otp,
 		});
 	} catch (error) {
 		console.log(error);
