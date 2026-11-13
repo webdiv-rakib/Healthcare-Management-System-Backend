@@ -159,13 +159,13 @@ const googleLogin = catchAsync(
 const forgotPassword = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const payload = req.body;
-		const result = await authService.forgotPassword(payload);
+		await authService.forgotPassword(payload);
 
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
-			message: "User logged in successfully",
-			data: {},
+			message: `OTP sent to Email:${payload.email}`,
+			data: null,
 		});
 	},
 );
