@@ -22,6 +22,8 @@ import type { TokenPayload } from "google-auth-library";
 import crypto from "crypto";
 import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodemailer";
+import ejs from "ejs";
+import path from "path";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password, patient: patientData } = payload;
@@ -357,12 +359,21 @@ const forgotPassword = async (payload: IForgotPassword) => {
 			value: 5 * 60,
 		},
 	});
+
+	const templatePath = path.join(
+		process.cwd(),
+		"src/templates/forgot-password.ejs",
+	);
+	const html = await ejs.renderFile(templatePath, {
+		OTP: otp,
+	});
 	await transporter.sendMail({
 		from: config.smtp_sender,
 		to: isUserExist.email,
 		subject: "Forgot Password",
 		// text: `Your OTP is ${otp}`,
-		html: `<h1>Your OTP is ${otp}</h1>`,
+		// html: `<h1>Your OTP is ${otp}</h1>`,
+		html,
 	});
 };
 
