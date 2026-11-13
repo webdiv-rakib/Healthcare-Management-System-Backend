@@ -4,6 +4,7 @@ import config from "./config";
 import { prisma } from "./lib/prisma";
 import { seedSuperAdmin, seedTestAdmin, seedTestDoctor } from "./utils/seed";
 import { redisClient } from "./lib/redis";
+import { transporter } from "./lib/nodemailer";
 
 async function main() {
 	try {
@@ -11,6 +12,10 @@ async function main() {
 		console.log("Connected to the database successfully");
 		await redisClient.connect();
 		console.log("Redis Connected Successfully");
+
+		await transporter.verify();
+		console.log("Nodemailer Connected Successfully");
+
 		await seedSuperAdmin();
 		await seedTestAdmin();
 		await seedTestDoctor();
