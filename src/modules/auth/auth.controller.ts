@@ -40,6 +40,39 @@ const registerPatient = catchAsync(
 	},
 );
 
+const verifyPatientEmail = catchAsync(
+	async (req: Request, res: Response, next: NextFunction) => {
+		const payload = req.body;
+		const result = await authService.verifyPatientEmail(payload);
+		const { accessToken, refreshToken, user, patient } = result;
+
+		res.cookie("accessToken", accessToken, {
+			httpOnly: true,
+			secure: false,
+			sameSite: "lax",
+			maxAge: 1000 * 60 * 60 * 24,
+		});
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: false,
+			sameSite: "lax",
+			maxAge: 1000 * 60 * 60 * 24 * 7,
+		});
+
+		sendResponse(res, {
+			statusCode: httpStatus.CREATED,
+			success: true,
+			message: "Verification OTP Sent",
+			data: {
+				accessToken,
+				refreshToken,
+				user,
+				patient,
+			},
+		});
+	},
+);
+
 const loginUser = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const payload = req.body;
@@ -181,6 +214,7 @@ const resetPassword = catchAsync(
 
 export const authController = {
 	registerPatient,
+	verifyPatientEmail,
 	loginUser,
 	getMe,
 	refreshToken,
