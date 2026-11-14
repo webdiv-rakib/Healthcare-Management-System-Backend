@@ -11,9 +11,8 @@ import config from "./config";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
-import z, { success } from "zod";
-import { redisClient } from "./lib/redis";
 import crypto from "crypto";
+import { userRoutes } from "./modules/user/user.route";
 
 const app: Application = express();
 // middleware
@@ -34,6 +33,8 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes);
+
 // app.use("/zod", async (req: Request, res: Response, next: NextFunction) => {
 // 	try {
 // 		const UserZodSchema = z.object({
