@@ -148,6 +148,8 @@ const verifyPatientEmail = async (payload: IVerifyEmailPayload) => {
 		include: { patient: true },
 	});
 
+	await redisClient.del(patientRegistrationKey);
+
 	const { patient, ...user } = createdUser;
 	const jwtPayload = {
 		userId: user.id,
