@@ -15,32 +15,27 @@ const registerPatient = catchAsync(
 			throw new Error(payload.error.issues[0]?.message);
 		}
 		console.log(payload);
-		const result = await authService.registerPatient(payload.data as any);
-		const { accessToken, refreshToken, user, patient } = result;
+		await authService.registerPatient(payload.data as any);
+		// const { accessToken, refreshToken, user, patient } = result;
 
-		res.cookie("accessToken", accessToken, {
-			httpOnly: true,
-			secure: false,
-			sameSite: "lax",
-			maxAge: 1000 * 60 * 60 * 24,
-		});
-		res.cookie("refreshToken", refreshToken, {
-			httpOnly: true,
-			secure: false,
-			sameSite: "lax",
-			maxAge: 1000 * 60 * 60 * 24 * 7,
-		});
+		// res.cookie("accessToken", accessToken, {
+		// 	httpOnly: true,
+		// 	secure: false,
+		// 	sameSite: "lax",
+		// 	maxAge: 1000 * 60 * 60 * 24,
+		// });
+		// res.cookie("refreshToken", refreshToken, {
+		// 	httpOnly: true,
+		// 	secure: false,
+		// 	sameSite: "lax",
+		// 	maxAge: 1000 * 60 * 60 * 24 * 7,
+		// });
 
 		sendResponse(res, {
 			statusCode: httpStatus.CREATED,
 			success: true,
-			message: "Patient register successfully",
-			data: {
-				accessToken,
-				refreshToken,
-				user,
-				patient,
-			},
+			message: "Verification OTP Sent",
+			data: null,
 		});
 	},
 );
