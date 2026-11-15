@@ -10,7 +10,7 @@ const bookAppointment = catchAsync(
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
-			message: "User profile fetched successfully",
+			message: "Appointment Created Successfully",
 			data: result,
 		});
 	},
