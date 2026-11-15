@@ -37,6 +37,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/appointment", appointmentRoutes);
+
 // app.use("/zod", async (req: Request, res: Response, next: NextFunction) => {
 // 	try {
 // 		const UserZodSchema = z.object({
