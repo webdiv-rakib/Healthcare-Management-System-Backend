@@ -22,7 +22,7 @@ const bookAppointment = async () => {
 				amount: "1200",
 				currency: "BDT",
 				intent: "sale",
-				merchantInvoiceNumber: "test003", // apointment number
+				merchantInvoiceNumber: "test002", // apointment number
 				subMerchantName: "Test",
 				merchantAssociationInfo: "MI05MID54RF09123456789",
 			}),
@@ -68,29 +68,7 @@ const bookAppointmentCallback = async (query: Record<string, any>) => {
 
 	const executedPaymentResult = await executedPaymentResponse.json();
 
-	if (status === "success") {
-		return {
-			executedPaymentResult,
-			redirectUrl: `${config.frontend_url}/dashboard/my-appointments?status=success`,
-		};
-	}
-	if (status === "failure") {
-		return {
-			executedPaymentResult,
-			redirectUrl: `${config.frontend_url}/dashboard/my-appointments?status=failure`,
-		};
-	}
-	if (status === "cancel") {
-		return {
-			executedPaymentResult,
-			redirectUrl: `${config.frontend_url}/dashboard/my-appointments?status=cancel`,
-		};
-	}
-
-	return {
-		executedPaymentResult,
-		redirectUrl: `${config.frontend_url}/dashboard/my-appointments`,
-	};
+	return executedPaymentResult;
 };
 
 export const appointmentService = {
