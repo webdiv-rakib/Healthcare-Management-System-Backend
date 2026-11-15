@@ -14,6 +14,7 @@ import { authRoutes } from "./modules/auth/auth.route";
 import crypto from "crypto";
 import { userRoutes } from "./modules/user/user.route";
 import { getBkashIdTOken } from "./lib/bkash";
+import { appointmentRoutes } from "./modules/appointment/appointment.route";
 
 const app: Application = express();
 // middleware
@@ -35,7 +36,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
-
+app.use("/api/v1/appointment", appointmentRoutes);
 // app.use("/zod", async (req: Request, res: Response, next: NextFunction) => {
 // 	try {
 // 		const UserZodSchema = z.object({
