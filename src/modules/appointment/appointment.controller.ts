@@ -6,9 +6,7 @@ import { appointmentService } from "./appointment.service";
 
 const bookAppointment = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const payload = req.body;
-		const user = req.user!;
-		const result = await appointmentService.bookAppointment(payload, user);
+		const result = await appointmentService.bookAppointment();
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
@@ -20,9 +18,11 @@ const bookAppointment = catchAsync(
 
 const bookAppointmentCallback = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const { redirectUrl } = await appointmentService.bookAppointmentCallback(
-			req.query,
-		);
+		console.log(req.query);
+		const { executedPaymentResult, redirectUrl } =
+			await appointmentService.bookAppointmentCallback(req.query);
+
+		console.log(executedPaymentResult, "callback controller");
 		res.redirect(redirectUrl);
 		// sendResponse(res, {
 		// 	statusCode: httpStatus.OK,
