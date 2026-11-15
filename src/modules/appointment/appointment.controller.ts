@@ -6,11 +6,13 @@ import { appointmentService } from "./appointment.service";
 
 const bookAppointment = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		const result = await appointmentService.bookAppointment();
+		const payload = req.body;
+		const user = req.user!;
+		const result = await appointmentService.bookAppointment(payload, user);
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
-			message: "Appointment Created Successfully",
+			message: "User profile fetched successfully",
 			data: result,
 		});
 	},
@@ -18,14 +20,10 @@ const bookAppointment = catchAsync(
 
 const bookAppointmentCallback = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
-		console.log(req.query);
-		const result = await appointmentService.bookAppointmentCallback(req.query);
-		sendResponse(res, {
-			statusCode: httpStatus.OK,
-			success: true,
-			message: "User profile fetched successfully",
-			data: result,
-		});
+		const { redirectUrl } = await appointmentService.bookAppointmentCallback(
+			req.query,
+		);
+		res.redirect(redirectUrl);
 	},
 );
 
