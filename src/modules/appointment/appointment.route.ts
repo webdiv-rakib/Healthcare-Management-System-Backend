@@ -6,6 +6,9 @@ const router = Router();
 router.post("/book-appointment", appointmentController.bookAppointment);
 
 // book appointment callback url
-router.get("/book-appointment/payment/callback", () => {});
+router.get(
+	"/book-appointment/payment/callback",
+	appointmentController.bookAppointmentCallback,
+);
 
 export const appointmentRoutes = router;

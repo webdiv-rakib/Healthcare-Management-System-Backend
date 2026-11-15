@@ -33,6 +33,13 @@ const bookAppointment = async () => {
 	return bkashCreatePaymentResult;
 };
 
+const bookAppointmentCallback = async () => {
+	return {
+		success: true,
+	};
+};
+
 export const appointmentService = {
 	bookAppointment,
+	bookAppointmentCallback,
 };
