@@ -13,6 +13,7 @@ import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
 import crypto from "crypto";
 import { userRoutes } from "./modules/user/user.route";
+import { getBkashIdTOken } from "./lib/bkash";
 
 const app: Application = express();
 // middleware
@@ -63,21 +64,36 @@ app.use("/api/v1/user", userRoutes);
 // 		next(error);
 // 	}
 // });
+
+// app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
+// 	try {
+// 		const otp = crypto.randomInt(100000, 1000000);
+
+// 		// await redisClient.set("forgot-password-otp:patient1@gmail.com", "123456", {
+// 		// 	expiration: {
+// 		// 		type: "EX",
+// 		// 		value: 60,
+// 		// 	},
+// 		// });
+
+// 		res.status(httpStatus.OK).json({
+// 			success: true,
+// 			message: "Welcome to Healthcare Management System",
+// 			data: otp,
+// 		});
+// 	} catch (error) {
+// 		console.log(error);
+// 		next(error);
+// 	}
+// });
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const otp = crypto.randomInt(100000, 1000000);
-
-		// await redisClient.set("forgot-password-otp:patient1@gmail.com", "123456", {
-		// 	expiration: {
-		// 		type: "EX",
-		// 		value: 60,
-		// 	},
-		// });
-
+		const grandIdTokenResult = await getBkashIdTOken();
+		console.log(grandIdTokenResult);
 		res.status(httpStatus.OK).json({
 			success: true,
 			message: "Welcome to Healthcare Management System",
-			data: otp,
+			data: null,
 		});
 	} catch (error) {
 		console.log(error);
