@@ -15,10 +15,11 @@ const bookAppointment = catchAsync(
 		});
 	},
 );
+
 const bookAppointmentCallback = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		console.log(req.query);
-		const result = await appointmentService.bookAppointmentCallback();
+		const result = await appointmentService.bookAppointmentCallback(req.query);
 		sendResponse(res, {
 			statusCode: httpStatus.OK,
 			success: true,
