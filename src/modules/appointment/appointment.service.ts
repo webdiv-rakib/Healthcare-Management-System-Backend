@@ -1,8 +1,11 @@
 import { getBkashIdTOken } from "./../../lib/bkash";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
-import { AppointmentStatus, PaymentStatus } from "../../../generated/prisma/enums";
-import { RequestUser } from "../../middlewares/auth";
+import {
+	AppointmentStatus,
+	PaymentStatus,
+} from "../../../generated/prisma/enums";
+import type { RequestUser } from "../../middlewares/auth";
 
 const bookAppointment = async (payload: any, user: RequestUser) => {
 	const appointment = await prisma.appointment.create({
@@ -45,7 +48,8 @@ const bookAppointment = async (payload: any, user: RequestUser) => {
 		// CHANGE 1 (ROOT CAUSE FIX): bKash v2 returns `paymentId` (lowercase 'd') in the JSON body.
 		// Support both `paymentId` and `paymentID` so it never resolves to undefined.
 		const createdPaymentId =
-			bkashCreatePaymentResult?.paymentId || bkashCreatePaymentResult?.paymentID;
+			bkashCreatePaymentResult?.paymentId ||
+			bkashCreatePaymentResult?.paymentID;
 
 		// CHANGE 2: Check `createdPaymentId` and `bkashURL` instead of uppercase `paymentID`
 		if (
@@ -53,11 +57,15 @@ const bookAppointment = async (payload: any, user: RequestUser) => {
 			!createdPaymentId ||
 			!bkashCreatePaymentResult?.bkashURL
 		) {
-			console.error("bKash Create Payment Error Response:", bkashCreatePaymentResult);
+			console.error(
+				"bKash Create Payment Error Response:",
+				bkashCreatePaymentResult,
+			);
 			throw new Error(
-				`bKash Error (${bkashCreatePaymentResult?.statusCode || bkashCreatePaymentResponse.status}): ${bkashCreatePaymentResult?.statusMessage ||
-				bkashCreatePaymentResult?.message ||
-				JSON.stringify(bkashCreatePaymentResult)
+				`bKash Error (${bkashCreatePaymentResult?.statusCode || bkashCreatePaymentResponse.status}): ${
+					bkashCreatePaymentResult?.statusMessage ||
+					bkashCreatePaymentResult?.message ||
+					JSON.stringify(bkashCreatePaymentResult)
 				}`,
 			);
 		}
@@ -75,7 +83,9 @@ const bookAppointment = async (payload: any, user: RequestUser) => {
 			},
 		});
 
-		return bkashCreatePaymentResult.bkashURL;
+		return {
+			paymentUrl: bkashCreatePaymentResult.bkashURL,
+		};
 	} catch (error) {
 		await prisma.appointment.delete({
 			where: { id: appointment.id },
@@ -181,7 +191,8 @@ const bookAppointmentCallback = async (query: Record<string, any>) => {
 					},
 					data: {
 						status: PaymentStatus.PAID,
-						bkashTrxId: executedPaymentResult.trxId || executedPaymentResult.trxID,
+						bkashTrxId:
+							executedPaymentResult.trxId || executedPaymentResult.trxID,
 						paidAt: executedPaymentResult.paymentExecuteTime,
 						gatewayResponse: executedPaymentResult,
 					},
@@ -193,7 +204,10 @@ const bookAppointmentCallback = async (query: Record<string, any>) => {
 			};
 		}
 
-		console.error("bKash Execute Payment Error Response:", executedPaymentResult);
+		console.error(
+			"bKash Execute Payment Error Response:",
+			executedPaymentResult,
+		);
 
 		await prisma.payment.update({
 			where: { id: existingPayment.id },

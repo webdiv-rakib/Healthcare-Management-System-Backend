@@ -13,7 +13,8 @@ const bookAppointment = catchAsync(
 			statusCode: httpStatus.OK,
 			success: true,
 			// CHANGE 12: Updated copy-pasted message to reflect appointment booking
-			message: "Appointment booked and bKash payment URL generated successfully",
+			message:
+				"Appointment booked and bKash payment URL generated successfully",
 			data: result,
 		});
 	},
