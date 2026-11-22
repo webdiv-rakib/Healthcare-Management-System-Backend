@@ -1,7 +1,7 @@
 import config from "../config";
 import { redisClient } from "./redis";
 
-export const getBkashIdTOken = async () => {
+export const getBkashIdToken = async () => {
 	try {
 		const IdTokenKey = "bkash:idToken";
 		const RefreshTokenKey = "bkash:refreshToken";
@@ -11,12 +11,12 @@ export const getBkashIdTOken = async () => {
 		const bkashRefreshToken = await redisClient.get(RefreshTokenKey);
 		const bkashRefreshTokenTTL = await redisClient.ttl(RefreshTokenKey);
 
-		// console.log({
-		// 	bkashIdToken,
-		// 	bkashIdTTL,
-		// 	bkashRefreshToken,
-		// 	bkashRefreshTokenTTL,
-		// });
+		console.log({
+			bkashIdToken,
+			bkashIdTTL,
+			bkashRefreshToken,
+			bkashRefreshTokenTTL,
+		});
 
 		// bkash if tokien remaining time less than equal 10 minutes or bkashIdToken is Expries
 		// bkash refresh token must exist

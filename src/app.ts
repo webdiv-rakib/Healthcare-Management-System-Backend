@@ -13,8 +13,9 @@ import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
 import crypto from "crypto";
 import { userRoutes } from "./modules/user/user.route";
-import { getBkashIdTOken } from "./lib/bkash";
+
 import { appointmentRoutes } from "./modules/appointment/appointment.route";
+import { getBkashIdToken } from "./lib/bkash";
 
 const app: Application = express();
 // middleware
@@ -90,7 +91,7 @@ app.use("/api/v1/appointment", appointmentRoutes);
 // });
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {
-		const grandIdTokenResult = await getBkashIdTOken();
+		const grandIdTokenResult = await getBkashIdToken();
 		console.log(grandIdTokenResult);
 		res.status(httpStatus.OK).json({
 			success: true,

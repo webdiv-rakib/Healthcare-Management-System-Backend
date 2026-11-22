@@ -1,4 +1,3 @@
-import { getBkashIdTOken } from "./../../lib/bkash";
 import config from "../../config";
 import { prisma } from "../../lib/prisma";
 import {
@@ -6,6 +5,7 @@ import {
 	PaymentStatus,
 } from "../../../generated/prisma/enums";
 import type { RequestUser } from "../../middlewares/auth";
+import { getBkashIdToken } from "../../lib/bkash";
 
 const bookAppointment = async (payload: any, user: RequestUser) => {
 	const appointment = await prisma.appointment.create({
@@ -15,7 +15,7 @@ const bookAppointment = async (payload: any, user: RequestUser) => {
 	});
 
 	try {
-		const bkashIdTOken = await getBkashIdTOken();
+		const bkashIdTOken = await getBkashIdToken();
 		if (!bkashIdTOken) {
 			throw new Error("No Bkash Access Token Found");
 		}
@@ -143,7 +143,7 @@ const bookAppointmentCallback = async (query: Record<string, any>) => {
 	}
 
 	if (status === "success") {
-		const bkashIdToken = await getBkashIdTOken();
+		const bkashIdToken = await getBkashIdToken();
 		if (!bkashIdToken) {
 			throw new Error("No Bkash Access Token Found");
 		}
