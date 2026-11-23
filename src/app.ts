@@ -13,6 +13,7 @@ import { notFound } from "./middlewares/notFound";
 import { authRoutes } from "./modules/auth/auth.route";
 import { userRoutes } from "./modules/user/user.route";
 import { getBkashIdToken } from "./lib/bkash";
+import { AppointmentRoute } from "./modules/appointment/appointment.route";
 
 
 const app: Application = express();
@@ -35,6 +36,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/appointment", AppointmentRoute);
 
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {
