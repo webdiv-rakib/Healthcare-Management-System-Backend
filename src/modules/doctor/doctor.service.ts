@@ -10,7 +10,7 @@ const applyDoctor = async (payload: any,
     additionalFiles: Express.Multer.File[]) => {
     const isUserExists = await prisma.user.findUnique({
         where: {
-            id: payload.email
+            email: payload.user.email
         }
     });
     if (isUserExists) {
@@ -77,10 +77,13 @@ const applyDoctor = async (payload: any,
             ...payload.user,
             password: hashedPassword,
             role: Role.DOCTOR,
+            needPasswordChange: true,
             doctor: {
                 create: {
                     ...payload.doctor,
-                    resumeUrl: resumeResult.secure_url,
+                    name: payload.user.name,
+                    email: payload.user.email,
+                    resume: resumeResult.secure_url,
                     resumePublicId: resumeResult.public_id,
                     additionalFiles: additionalFilesUploadResults.map((file) => ({
                         url: file.secure_url,
@@ -88,6 +91,9 @@ const applyDoctor = async (payload: any,
                     }))
                 }
             }
+        },
+        include: {
+            doctor: true
         }
     });
     return doctorApplication
