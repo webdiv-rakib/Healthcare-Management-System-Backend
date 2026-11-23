@@ -1,4 +1,4 @@
-import config from "../config"
+import config from "../config";
 import { redisClient } from "./redis";
 
 export const getBkashIdToken = async () => {

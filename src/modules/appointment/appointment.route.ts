@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { AppointmentController } from "./appointment.controller";
 
-const router = Router()
+const router = Router();
 router.post("/book-appointment", AppointmentController.bookAppointment);
-router.get("/book-appointment/payment/callback", () => { })
+router.get("/book-appointment/payment/callback", () => {});
 
-export const AppointmentRoute = router
+export const AppointmentRoute = router;

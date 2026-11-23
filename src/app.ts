@@ -16,7 +16,6 @@ import { getBkashIdToken } from "./lib/bkash";
 import { AppointmentRoute } from "./modules/appointment/appointment.route";
 import { DoctorRoute } from "./modules/doctor/doctor.route";
 
-
 const app: Application = express();
 // middleware
 app.use(express.json());
@@ -43,7 +42,7 @@ app.use("/api/v1/doctors", DoctorRoute);
 app.get("/test", async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const grandIdTokenResult = await getBkashIdToken();
-		console.log(grandIdTokenResult, "Grand ID Token")
+		console.log(grandIdTokenResult, "Grand ID Token");
 		res.status(httpStatus.OK).json({
 			success: true,
 			message: "Welcome to Healthcare Management System",
