@@ -1,8 +1,9 @@
 import config from "../../config"
-import { getBkashIdToken } from "../../lib/bkash"
+import { getBkashIdTOken } from "../../lib/bkash";
+
 
 const bookAppointment = async () => {
-    const bkashIdToken = await getBkashIdToken();
+    const bkashIdToken = await getBkashIdTOken();
     console.log(bkashIdToken, "bkash id_token")
     if (!bkashIdToken) {
         throw new Error("No Bkash Access Token Found")
@@ -34,3 +35,5 @@ const bookAppointment = async () => {
 export const AppointmentService = {
     bookAppointment
 }
+
+// tried many way but still not working.
