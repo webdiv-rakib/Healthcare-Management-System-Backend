@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/style/useConst: <explanation> */
+import httpStatus from 'http-status';
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import type {
@@ -25,6 +26,7 @@ import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodemailer";
 import ejs from "ejs";
 import path from "path";
+import { AppError } from "../../utils/AppError";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password, patient: patientData } = payload;
@@ -203,7 +205,7 @@ const loginUser = async (payload: ILoginUserPayload) => {
 	});
 
 	if (!user) {
-		throw new Error("User not found");
+		throw new AppError(httpStatus.NOT_FOUND, "User Not Found");
 	}
 	if (user.status === UserStatus.BLOCKED) {
 		throw new Error("User is blocked");
