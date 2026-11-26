@@ -164,7 +164,7 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
 		include: { doctor: true }
 	});
 	return verifyUser
-}
+};
 
 const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUser) => {
 	const { doctorId, verificationStatus, rejectionReason } = payload;
@@ -212,10 +212,44 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 		},
 	});
 
+	const isApproved = verificationStatus === DoctorVerificationsStatus.APPROVED;
+
+	const tempatePath = path.join(
+		process.cwd(),
+		`src/app/templates/${isApproved
+			? "doctor-application-approved.ejs"
+			: "doctor-application-rejected.ejs"
+		}`,
+	);
+
+	const templateData = {
+		name: updatedDoctor.name,
+		reason: updatedDoctor.rejectionReason,
+	};
+
+	const html = await ejs.renderFile(tempatePath, templateData);
+	await transporter.sendMail({
+		from: config.smtp_sender,
+		to: updatedDoctor.email,
+		subject: isApproved
+			? "Your Doctor Application Has Been Approved"
+			: "Your Doctor Application Has Been Rejected",
+		html,
+	});
+
+	return updatedDoctor
+};
+
+const getAllDoctors = async () => {
+
+	// search, filter, sorting, pagination.
+	const allDoctors = await prisma.doctor.findMany({})
+	return allDoctors
 }
 
 export const DoctorService = {
 	applyDoctor,
 	verifyDoctorEmail,
-	approveDoctor
+	approveDoctor,
+	getAllDoctors
 };
