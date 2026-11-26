@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import type { Request, Response } from "express";
+import { AppError } from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { DoctorService } from "./doctor.service";
@@ -13,7 +14,10 @@ const applyDoctor = catchAsync(async (req: Request, res: Response) => {
 		JSON.parse(req.body.data),
 	);
 	if (!zodValidationResult.success) {
-		throw new Error(zodValidationResult.error.issues[0]?.message);
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			zodValidationResult.error.issues[0]?.message || "Validation error",
+		);
 	}
 
 	const payload = zodValidationResult.data;

@@ -1,4 +1,5 @@
 import type { UploadApiResponse } from "cloudinary";
+import httpStatus from "http-status";
 import { prisma } from "../../lib/prisma";
 import { cloudinary } from "../../lib/cloudinary";
 import bcrypt from "bcryptjs";
@@ -13,6 +14,7 @@ import { IApproveDoctorPayload, ICreateDoctorPayload, IVerifyDoctorEmailPayload 
 import { RequestUser } from "../../middlewares/auth";
 import { IQuery } from "../../interfaces";
 import { DoctorWhereInput } from "../../../generated/prisma/models";
+import { AppError } from "../../utils/AppError";
 
 const applyDoctor = async (
 	payload: ICreateDoctorPayload,
@@ -25,7 +27,10 @@ const applyDoctor = async (
 		},
 	});
 	if (isUserExists) {
-		throw new Error("User Already Exists With This Email");
+		throw new AppError(
+			httpStatus.CONFLICT,
+			"User Already Exists With This Email",
+		);
 	}
 
 	const resumeResult = await new Promise<UploadApiResponse>(
@@ -42,7 +47,12 @@ const applyDoctor = async (
 						}
 
 						if (!result) {
-							return reject(new Error("No result returned from Cloudinary"));
+							return reject(
+								new AppError(
+									httpStatus.INTERNAL_SERVER_ERROR,
+									"No result returned from Cloudinary",
+								),
+							);
 						}
 
 						resolve(result);
@@ -66,7 +76,12 @@ const applyDoctor = async (
 							}
 
 							if (!result) {
-								return reject(new Error("No result returned from Cloudinary"));
+								return reject(
+									new AppError(
+										httpStatus.INTERNAL_SERVER_ERROR,
+										"No result returned from Cloudinary",
+									),
+								);
 							}
 
 							resolve(result);
@@ -145,19 +160,25 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
 		where: { email, role: Role.DOCTOR }
 	});
 	if (!existingUser) {
-		throw new Error("Doctor Application Not Found. Please Apply Again.");
-	};
+		throw new AppError(
+			httpStatus.NOT_FOUND,
+			"Doctor Application Not Found. Please Apply Again.",
+		);
+	}
 	if (existingUser.emailVerified) {
-		throw new Error("Email Already Verified")
+		throw new AppError(httpStatus.CONFLICT, "Email Already Verified");
 	}
 	const otpKey = `doctor-application-otp:${email}`;
 	const redisOtp = await redisClient.get(otpKey);
 	if (!redisOtp) {
-		throw new Error("OTP Expired. Your Application window has closed, please apply again")
-	};
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"OTP Expired. Your Application window has closed, please apply again",
+		);
+	}
 	if (redisOtp !== otp) {
-		throw new Error("OTP Does not matched")
-	};
+		throw new AppError(httpStatus.BAD_REQUEST, "OTP Does not matched");
+	}
 	await redisClient.del(otpKey);
 	const verifyUser = await prisma.user.update({
 		where: { id: existingUser.id },
@@ -175,20 +196,23 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 		include: { user: true },
 	});
 	if (!existingDoctor) {
-		throw new Error("Doctor Application Not Found");
+		throw new AppError(httpStatus.NOT_FOUND, "Doctor Application Not Found");
 	}
 
 	if (existingDoctor.isDeleted) {
-		throw new Error("Doctor Application Has Been Deleted");
+		throw new AppError(httpStatus.NOT_FOUND, "Doctor Application Has Been Deleted");
 	}
 
 	if (!existingDoctor.user.emailVerified) {
-		throw new Error(
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
 			"Doctor Has Not Verified Their Email Yet. Application Cannot Be Reviewed.",
 		);
 	}
 	if (existingDoctor.verificationStatus !== DoctorVerificationsStatus.PENDING) {
-		throw new Error(`Doctor Application Has Already Been ${existingDoctor.verificationStatus.toLowerCase()}`,
+		throw new AppError(
+			httpStatus.CONFLICT,
+			`Doctor Application Has Already Been ${existingDoctor.verificationStatus.toLowerCase()}`,
 		);
 	}
 
@@ -196,10 +220,11 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 		verificationStatus === DoctorVerificationsStatus.REJECTED &&
 		!rejectionReason
 	) {
-		throw new Error(
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
 			"Rejection Reason Is Required When Rejecting A Doctor Application",
 		);
-	};
+	}
 
 	const updatedDoctor = await prisma.doctor.update({
 		where: { id: doctorId },

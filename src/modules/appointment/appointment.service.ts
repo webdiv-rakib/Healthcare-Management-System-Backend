@@ -1,11 +1,13 @@
+import httpStatus from "http-status";
 import config from "../../config";
 import { getBkashIdToken } from "../../lib/bkash";
+import { AppError } from "../../utils/AppError";
 
 const bookAppointment = async () => {
 	const bkashIdToken = await getBkashIdToken();
 	console.log(bkashIdToken, "bkash id_token");
 	if (!bkashIdToken) {
-		throw new Error("No Bkash Access Token Found");
+		throw new AppError(httpStatus.BAD_GATEWAY, "No Bkash Access Token Found");
 	}
 	const bkashCreatePayment = await fetch(
 		`${config.bkash_base_url}/tokenized-checkout/payment/create`,

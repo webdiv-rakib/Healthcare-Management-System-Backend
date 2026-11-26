@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import type { NextFunction, Request, Response } from "express";
+import { AppError } from "../../utils/AppError";
 import { catchAsync } from "../../utils/catchAsync";
 import { authService } from "./auth.service";
 import { sendResponse } from "../../utils/sendResponse";
@@ -12,7 +13,10 @@ const registerPatient = catchAsync(
 			req.body,
 		);
 		if (!payload.success) {
-			throw new Error(payload.error.issues[0]?.message);
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				payload.error.issues[0]?.message || "Validation error",
+			);
 		}
 		console.log(payload);
 		await authService.registerPatient(payload.data as any);
@@ -108,7 +112,10 @@ const getMe = catchAsync(
 		const user = req.user as unknown as IRequestUser;
 
 		if (!user) {
-			throw new Error("User information is missing in the request");
+			throw new AppError(
+				httpStatus.UNAUTHORIZED,
+				"User information is missing in the request",
+			);
 		}
 
 		const result = await authService.getMe(user);
@@ -124,7 +131,7 @@ const getMe = catchAsync(
 const refreshToken = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		if (!req.cookies.refreshToken) {
-			throw new Error("Refresh token is missing");
+			throw new AppError(httpStatus.UNAUTHORIZED, "Refresh token is missing");
 		}
 		const result = await authService.refreshToken(req.cookies.refreshToken);
 		const { accessToken, refreshToken: newRefreshToken } = result;

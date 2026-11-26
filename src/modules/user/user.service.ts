@@ -1,6 +1,8 @@
 import type { UploadApiResponse } from "cloudinary";
+import httpStatus from "http-status";
 import { cloudinary } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
+import { AppError } from "../../utils/AppError";
 
 const uploadProfileImage = async (buffer: Buffer, userId: string) => {
 	// const cloudinaryResult = cloudinary.uploader.upload_stream(
@@ -11,7 +13,7 @@ const uploadProfileImage = async (buffer: Buffer, userId: string) => {
 	//     async (error, result) => {
 	//         if(error){
 	//             console.log(error);
-	//             throw new Error(error.message)
+	//             throw new AppError(httpStatus.BAD_GATEWAY, error.message)
 	//         }
 
 	//         console.log(result, "result");
@@ -57,7 +59,12 @@ const uploadProfileImage = async (buffer: Buffer, userId: string) => {
 						}
 
 						if (!result) {
-							return reject(new Error("No result returned from Cloudinary"));
+							return reject(
+								new AppError(
+									httpStatus.INTERNAL_SERVER_ERROR,
+									"No result returned from Cloudinary",
+								),
+							);
 						}
 
 						resolve(result);
