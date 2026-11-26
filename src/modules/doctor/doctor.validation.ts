@@ -29,9 +29,7 @@ export const ApplyAsDoctorValidationZodSchema = z.object({
 			.optional(),
 
 		// Handles converting incoming FormData strings like "150.00" into a float number
-		consultationsFee: z
-			.number()
-			.min(0, "Consultation fee cannot be negative"),
+		consultationsFee: z.number().min(0, "Consultation fee cannot be negative"),
 		contactNumber: z
 			.string()
 			.trim()

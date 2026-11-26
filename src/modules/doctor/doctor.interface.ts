@@ -1,33 +1,33 @@
-import { DoctorVerificationsStatus } from "../../../generated/prisma/enums";
+import type { DoctorVerificationsStatus } from "../../../generated/prisma/enums";
 
 export interface IUser {
-    name: string;
-    email: string;
+	name: string;
+	email: string;
 }
 
 export interface IDoctor {
-    address?: string;
-    specialization: string;
-    licenseNumber: string;
-    qualifications: string;
-    experienceYears: number;
-    bio?: string;
-    consultationsFee: number; // Zod-এ required থাকায় এখানেও required রাখা ভালো
-    contactNumber?: string;
+	address?: string;
+	specialization: string;
+	licenseNumber: string;
+	qualifications: string;
+	experienceYears: number;
+	bio?: string;
+	consultationsFee: number; // Zod-এ required থাকায় এখানেও required রাখা ভালো
+	contactNumber?: string;
 }
 
 export interface ICreateDoctorPayload {
-    user: IUser;
-    doctor: IDoctor;
+	user: IUser;
+	doctor: IDoctor;
 }
 
 export interface IVerifyDoctorEmailPayload {
-    email: string,
-    otp: string
+	email: string;
+	otp: string;
 }
 
 export interface IApproveDoctorPayload {
-    doctorId: string,
-    verificationStatus: DoctorVerificationsStatus,
-    rejectionReason?: string
+	doctorId: string;
+	verificationStatus: DoctorVerificationsStatus;
+	rejectionReason?: string;
 }

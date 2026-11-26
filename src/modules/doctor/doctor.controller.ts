@@ -49,7 +49,7 @@ const verifyDoctorEmail = catchAsync(async (req: Request, res: Response) => {
 
 const approveDoctor = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
-	const user = req.user!
+	const user = req.user!;
 	const result = await DoctorService.approveDoctor(payload, user);
 	sendResponse(res, {
 		statusCode: httpStatus.OK,
@@ -59,22 +59,20 @@ const approveDoctor = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
-const getAllDoctors = catchAsync(
-	async (req: Request, res: Response) => {
-		const { data, meta } = await DoctorService.getAllDoctors(req.query);
-		sendResponse(res, {
-			statusCode: httpStatus.OK,
-			success: true,
-			message: "Successfully fetched all the Docotors applications",
-			data: data,
-			meta: meta
-		});
-	}
-)
+const getAllDoctors = catchAsync(async (req: Request, res: Response) => {
+	const { data, meta } = await DoctorService.getAllDoctors(req.query);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Successfully fetched all the Docotors applications",
+		data: data,
+		meta: meta,
+	});
+});
 
 export const DoctorController = {
 	applyDoctor,
 	verifyDoctorEmail,
 	approveDoctor,
-	getAllDoctors
+	getAllDoctors,
 };

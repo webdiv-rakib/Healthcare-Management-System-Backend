@@ -1,5 +1,5 @@
 /** biome-ignore-all lint/style/useConst: <explanation> */
-import httpStatus from 'http-status';
+import httpStatus from "http-status";
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import type {
@@ -353,7 +353,10 @@ const googleLogin = async (payload: IGoogleLoginPayload) => {
 		throw new AppError(httpStatus.BAD_REQUEST, "Google Email Not Found");
 	}
 	if (!googleIdTokenPayload.name) {
-		throw new AppError(httpStatus.BAD_REQUEST, "Google Email User Name Not Found");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"Google Email User Name Not Found",
+		);
 	}
 
 	const ifPatientExistsWithGooleAuth = await prisma.user.findUnique({

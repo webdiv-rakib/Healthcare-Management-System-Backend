@@ -4,16 +4,23 @@ import { prisma } from "../../lib/prisma";
 import { cloudinary } from "../../lib/cloudinary";
 import bcrypt from "bcryptjs";
 import config from "../../config";
-import { DoctorVerificationsStatus, Role } from "../../../generated/prisma/enums";
-import crypto from "crypto"
+import {
+	DoctorVerificationsStatus,
+	Role,
+} from "../../../generated/prisma/enums";
+import crypto from "crypto";
 import { redisClient } from "../../lib/redis";
-import path from "path"
-import ejs from "ejs"
+import path from "path";
+import ejs from "ejs";
 import { transporter } from "../../lib/nodemailer";
-import { IApproveDoctorPayload, ICreateDoctorPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
-import { RequestUser } from "../../middlewares/auth";
-import { IQuery } from "../../interfaces";
-import { DoctorWhereInput } from "../../../generated/prisma/models";
+import type {
+	IApproveDoctorPayload,
+	ICreateDoctorPayload,
+	IVerifyDoctorEmailPayload,
+} from "./doctor.interface";
+import type { RequestUser } from "../../middlewares/auth";
+import type { IQuery } from "../../interfaces";
+import type { DoctorWhereInput } from "../../../generated/prisma/models";
 import { AppError } from "../../utils/AppError";
 
 const applyDoctor = async (
@@ -123,8 +130,8 @@ const applyDoctor = async (
 		},
 	});
 
-	const expirationSeconds = 60 * 60 // 1hour
-	const otpKey = `doctor-application-otp:${payload.user.email}`
+	const expirationSeconds = 60 * 60; // 1hour
+	const otpKey = `doctor-application-otp:${payload.user.email}`;
 	const otpValue = crypto.randomInt(100000, 1000000).toString();
 	await redisClient.set(otpKey, otpValue, {
 		expiration: {
@@ -154,10 +161,10 @@ const applyDoctor = async (
 };
 
 const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
-	const otp = payload.otp
+	const otp = payload.otp;
 	const email = payload.email.trim().toLowerCase();
 	const existingUser = await prisma.user.findUnique({
-		where: { email, role: Role.DOCTOR }
+		where: { email, role: Role.DOCTOR },
 	});
 	if (!existingUser) {
 		throw new AppError(
@@ -184,12 +191,15 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
 		where: { id: existingUser.id },
 		data: { emailVerified: true },
 		omit: { password: true },
-		include: { doctor: true }
+		include: { doctor: true },
 	});
-	return verifyUser
+	return verifyUser;
 };
 
-const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUser) => {
+const approveDoctor = async (
+	payload: IApproveDoctorPayload,
+	reviewer: RequestUser,
+) => {
 	const { doctorId, verificationStatus, rejectionReason } = payload;
 	const existingDoctor = await prisma.doctor.findUnique({
 		where: { id: doctorId },
@@ -200,7 +210,10 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 	}
 
 	if (existingDoctor.isDeleted) {
-		throw new AppError(httpStatus.NOT_FOUND, "Doctor Application Has Been Deleted");
+		throw new AppError(
+			httpStatus.NOT_FOUND,
+			"Doctor Application Has Been Deleted",
+		);
 	}
 
 	if (!existingDoctor.user.emailVerified) {
@@ -243,9 +256,10 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 
 	const tempatePath = path.join(
 		process.cwd(),
-		`src/app/templates/${isApproved
-			? "doctor-application-approved.ejs"
-			: "doctor-application-rejected.ejs"
+		`src/app/templates/${
+			isApproved
+				? "doctor-application-approved.ejs"
+				: "doctor-application-rejected.ejs"
 		}`,
 	);
 
@@ -264,7 +278,7 @@ const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUs
 		html,
 	});
 
-	return updatedDoctor
+	return updatedDoctor;
 };
 
 const getAllDoctors = async (query: IQuery) => {
@@ -273,8 +287,8 @@ const getAllDoctors = async (query: IQuery) => {
 	const page = query.page ? Number(query.page) : 1;
 	const skip = (page - 1) * limit;
 	const sortBy = query.sortBy ? query.sortBy : "createdAt";
-	const sortOrder = query.sortOrder ? query.sortOrder : "desc"
-	const andConditions: DoctorWhereInput[] = []
+	const sortOrder = query.sortOrder ? query.sortOrder : "desc";
+	const andConditions: DoctorWhereInput[] = [];
 
 	//Searching
 	if (query.searchTerm) {
@@ -327,32 +341,31 @@ const getAllDoctors = async (query: IQuery) => {
 
 	const allDoctors = await prisma.doctor.findMany({
 		where: {
-			AND: andConditions
+			AND: andConditions,
 		},
 		take: limit,
 		skip: skip,
 
-
 		orderBy: {
 			// sortBy : sortOrder
-			[sortBy]: sortOrder
+			[sortBy]: sortOrder,
 		},
 		include: {
 			user: {
 				omit: {
-					password: true
-				}
+					password: true,
+				},
 			},
 
 			// schedules: true,
 			// appointments: true
 			// prescriptions: true
-		}
+		},
 	});
 	const totalDoctorCount = await prisma.doctor.count({
 		where: {
-			AND: andConditions
-		}
+			AND: andConditions,
+		},
 	});
 
 	return {
@@ -361,14 +374,14 @@ const getAllDoctors = async (query: IQuery) => {
 			page: page,
 			limit: limit,
 			total: totalDoctorCount,
-			totalPages: Math.ceil(totalDoctorCount / limit)
-		}
-	}
-}
+			totalPages: Math.ceil(totalDoctorCount / limit),
+		},
+	};
+};
 
 export const DoctorService = {
 	applyDoctor,
 	verifyDoctorEmail,
 	approveDoctor,
-	getAllDoctors
+	getAllDoctors,
 };
