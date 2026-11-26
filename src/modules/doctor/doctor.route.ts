@@ -18,4 +18,9 @@ router.post(
 	DoctorController.verifyDoctorEmail,
 );
 
+router.patch(
+	"/approve-doctor",
+	DoctorController.verifyDoctorEmail,
+);
+
 export const DoctorRoute = router;

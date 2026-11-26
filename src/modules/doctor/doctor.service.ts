@@ -3,13 +3,14 @@ import { prisma } from "../../lib/prisma";
 import { cloudinary } from "../../lib/cloudinary";
 import bcrypt from "bcryptjs";
 import config from "../../config";
-import { Role } from "../../../generated/prisma/enums";
+import { DoctorVerificationsStatus, Role } from "../../../generated/prisma/enums";
 import crypto from "crypto"
 import { redisClient } from "../../lib/redis";
 import path from "path"
 import ejs from "ejs"
 import { transporter } from "../../lib/nodemailer";
-import { ICreateDoctorPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
+import { IApproveDoctorPayload, ICreateDoctorPayload, IVerifyDoctorEmailPayload } from "./doctor.interface";
+import { RequestUser } from "../../middlewares/auth";
 
 const applyDoctor = async (
 	payload: ICreateDoctorPayload,
@@ -165,7 +166,56 @@ const verifyDoctorEmail = async (payload: IVerifyDoctorEmailPayload) => {
 	return verifyUser
 }
 
+const approveDoctor = async (payload: IApproveDoctorPayload, reviewer: RequestUser) => {
+	const { doctorId, verificationStatus, rejectionReason } = payload;
+	const existingDoctor = await prisma.doctor.findUnique({
+		where: { id: doctorId },
+		include: { user: true },
+	});
+	if (!existingDoctor) {
+		throw new Error("Doctor Application Not Found");
+	}
+
+	if (existingDoctor.isDeleted) {
+		throw new Error("Doctor Application Has Been Deleted");
+	}
+
+	if (!existingDoctor.user.emailVerified) {
+		throw new Error(
+			"Doctor Has Not Verified Their Email Yet. Application Cannot Be Reviewed.",
+		);
+	}
+	if (existingDoctor.verificationStatus !== DoctorVerificationsStatus.PENDING) {
+		throw new Error(`Doctor Application Has Already Been ${existingDoctor.verificationStatus.toLowerCase()}`,
+		);
+	}
+
+	if (
+		verificationStatus === DoctorVerificationsStatus.REJECTED &&
+		!rejectionReason
+	) {
+		throw new Error(
+			"Rejection Reason Is Required When Rejecting A Doctor Application",
+		);
+	};
+
+	const updatedDoctor = await prisma.doctor.update({
+		where: { id: doctorId },
+		data: {
+			verificationStatus,
+			rejectionReason:
+				verificationStatus === DoctorVerificationsStatus.REJECTED
+					? rejectionReason
+					: null,
+			reviewedBy: reviewer.userId,
+			reviewedAt: new Date(),
+		},
+	});
+
+}
+
 export const DoctorService = {
 	applyDoctor,
-	verifyDoctorEmail
+	verifyDoctorEmail,
+	approveDoctor
 };
