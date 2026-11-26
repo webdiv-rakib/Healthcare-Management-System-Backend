@@ -5,6 +5,7 @@ import { prisma } from "./lib/prisma";
 import { seedSuperAdmin, seedTestAdmin, seedTestDoctor } from "./utils/seed";
 import { redisClient } from "./lib/redis";
 import { transporter } from "./lib/nodemailer";
+import { deleteUnverifiedDoctors } from "./lib/cron";
 
 async function main() {
 	try {
@@ -19,6 +20,9 @@ async function main() {
 		await seedSuperAdmin();
 		await seedTestAdmin();
 		await seedTestDoctor();
+
+		await deleteUnverifiedDoctors();
+
 		app.listen(config.port, () => {
 			console.log(`Server is running on port:${config.port}`);
 		});
