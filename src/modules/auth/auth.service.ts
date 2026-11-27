@@ -590,6 +590,8 @@ const resetPassword = async (payload: IResetPassword) => {
 	});
 };
 
+// tomorrow is my first interview with me good luck.
+
 export const authService = {
 	registerPatient,
 	verifyPatientEmail,
